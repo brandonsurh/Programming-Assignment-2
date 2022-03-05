@@ -32,6 +32,8 @@ public class PA2 {
         Random rand = new Random();
 
         Scanner sc = new Scanner(System.in);  
+
+        // prompts for number of guests
         System.out.println("Enter number of guests: ");
         int totalGuests = sc.nextInt();
 
@@ -39,27 +41,26 @@ public class PA2 {
         Boolean [] started = new Boolean[totalGuests];
         Arrays.fill(started, Boolean.FALSE);
 
+        // creates primary guests array and one designated counter
         PrimaryGuest [] primGuests = new PrimaryGuest[totalGuests - 1];
         SecondaryGuest secGuest = new SecondaryGuest(totalGuests);
 
-        // create threads
+        // create primary guest threads
         for (int i = 0; i < totalGuests - 1; i++)
         {
             primGuests[i] = new PrimaryGuest(i);
         }
 
-
         int randomNumber;
+
         // while some threads havent been started, keep trying to start threads
+        // makes sure all threads get once
         while (Arrays.asList(started).contains(Boolean.FALSE) == true)
         {
-            //System.out.println(Arrays.toString(started));
-            
-
+            // selects random guest to check
             randomNumber = rand.nextInt(totalGuests);
-            //System.out.println("randomNumber in first while loop is " + randomNumber);
-            
-            // chose designated thread and not started yet
+
+            // designated thread, has it been started yet?
             if (randomNumber == totalGuests - 1 && Arrays.asList(started).get(randomNumber) == false)
             {
                 secGuest.start();
@@ -68,9 +69,10 @@ public class PA2 {
                 } catch(InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }
+                // set flag to started
                 started[randomNumber] = Boolean.TRUE;
             }
-            // if thread chosen hasnt started yet
+            // primary thread, has it been started yet?
             else if (randomNumber != totalGuests - 1 && Arrays.asList(started).get(randomNumber) == false)
             {
                 primGuests[randomNumber].start();
@@ -79,16 +81,19 @@ public class PA2 {
                 } catch(InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }
+                // set flag to started
                 started[randomNumber] = Boolean.TRUE;
             }
         }
-        //System.out.println("Finished start while loop");
+
         // while loop to keep running threads
+        // minotaur choosing guests to enter maze
         while (true)
         {
+            // random selection
             randomNumber = rand.nextInt(totalGuests);
-            //System.out.println("randomNumber in second while loop is " + randomNumber);
 
+            // if designated counter is chosen
             if (randomNumber == totalGuests - 1)
             {
                 // run thread
@@ -99,6 +104,7 @@ public class PA2 {
                     Thread.currentThread().interrupt();
                 }
             }
+            // if primary guest is chosen
             else
             {
                 // run thread
@@ -122,7 +128,9 @@ class PrimaryGuest extends Thread {
 
     Random rand = new Random();
 
+    // name 
     private int threadNumber;
+    // did they have cake? (debug purposes)
     private boolean hadCake;
 
     // constructor
@@ -135,7 +143,6 @@ class PrimaryGuest extends Thread {
     @Override
     public void run()
     {
-        //System.out.println("Thread " + threadNumber + " is awake.");
 
         // decides if guest makes it to end of maze
         int randomNumber = rand.nextInt(10);
@@ -143,33 +150,15 @@ class PrimaryGuest extends Thread {
         // guest reaches end
         if (randomNumber > 2)
         {
-            //System.out.println("Thread " + threadNumber + " reached the cake.");
-            //System.out.println("isCakePresent is currently" + Labyrinth.isCakePresent);
             // if guest did not have cake and cake is there, eat cake
             if (hadCake == false && Labyrinth.isCakePresent == true)
             {
                 // eat cake, set true 
                 this.hadCake = true;
-
                 // set atomic variable? for cake to be missing state
                 Labyrinth.isCakePresent = false;
-                //System.out.println("Thread " + threadNumber + " ate the cake.");
-                //System.out.println("isCakePresent is now " + Labyrinth.isCakePresent);
-            }
-            else
-            {
-                //System.out.println("Thread " + threadNumber + " did not eat the cake.");
             }
         }
-        // guest does not reach end
-        else
-        {
-            //System.out.println("Thread " + threadNumber + " did not reach the cake.");
-            // guest did not reach end
-            // may not need else statement
-        }
-
-        // thread needs to sleep and then new thread needs to run
     }
 }
 
@@ -178,7 +167,9 @@ class SecondaryGuest extends Thread {
 
     Random rand = new Random();
 
+    // used to count how many have visited (ate cake)
     private int requestCount;
+    // how many guests are there
     private int totalGuests;
 
     // constructor given amount of total guests
@@ -193,32 +184,20 @@ class SecondaryGuest extends Thread {
     public void run()
     {
 
-        //System.out.println("Designated counter thread is awake.");
-
         // decides if guest makes it to end of maze
         int randomNumber = rand.nextInt(10);
 
         // guest reaches end
         if (randomNumber > 2)
         {
-            //System.out.println("Designated counter reached the end.");
             // if there is no cake, someone ate it
             // request more cake, increment
             if (Labyrinth.isCakePresent == false)
             {
                 // request more cake, increment
                 requestCount++;
-                // atomic variable? (isCakePresent), set to true
                 Labyrinth.isCakePresent = true;
-                //System.out.println("Designated counter requested cake." + " requestCount is now " + requestCount);
             }
-        }
-        // guest does not reach end
-        else
-        {
-            //System.out.println("Designated counter did not reach the end.");
-            // guest did not reach end
-            // may not need else statement
         }
 
         // if requestCount is equal to n-1, then all guests have had cake and all have visited
@@ -228,8 +207,6 @@ class SecondaryGuest extends Thread {
             // needs to shutdown program
             System.exit(0);
         }
-
-        // thread needs to sleep and then new thread needs to run
     }
 }
 
