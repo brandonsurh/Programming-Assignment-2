@@ -1,11 +1,10 @@
 # Programming-Assignment-2
 
 Problem 1:
-My solution uses two main types of threads. I named them primary and secondary. The primary thread accounts for all of the guests except for one. These types of guests will eat the cake once but never twice. The secondary thread will count how many times it sees that there is a missing cake and request another. When the secondary thread sees that it has requested totalGuests - 1, then it will know that all of the guests have eaten cake and that all of the guests have been in the maze. Then it will announce this to the minotaur and exit the program. To simulate this further, I have added a chance functionality to see if the guest has made it to the end of the maze and a chance functionality to figure out which thread the minotaur picks to enter the maze.
+My solution uses two main types of threads. I named them primary and secondary. The primary thread accounts for all of the guests except for one. These types of guests will eat the cake once but never twice. The secondary thread will count how many times it sees that there is a missing cake and request another. When the secondary thread sees that it has requested totalGuests - 1, then it will know that all of the guests have eaten cake and that all of the guests have been in the maze. Then it will announce this to the minotaur and exit the program. To simulate this further, I have added a chance functionality to see if the guest has made it to the end of the maze and a chance functionality to figure out which thread the minotaur picks to enter the maze. Threads may enter the maze multiple times but if they only eat the cake once then the secondary thread can count how many guests have entered.
 
-
-
-
+Problem 2:
+For this problem I chose the first approach. Before trying the first approach I started with the third approach but had trouble implementing an array based lock queue. My current approach uses spinlocks to decide who gets to enter the room. This means that the threads will continuously check the state of the lock until it is free and grab it when it is free. To do this, I create all of the threads and start them all. When they run they use a chance checker to see if they want to check the room and if they decide to check the room then they will continuously try the lock until it is free and they can grab it. Once they are able to grab the lock then they look at the vase and then unlock the lock. After each time viewing the case the threads get less interested in going to the vase and so they have a lower chance to try checking the lock.
 
 
 Which of these three strategies should the guests choose? Please discuss the advantages and disadvantages.
