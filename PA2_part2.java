@@ -6,112 +6,108 @@ import java.util.concurrent.atomic.*;
 
 public class PA2_part2 {
 
-	
-
 	public static void main (String [] args) {
 
+		// create random var
 		Random rand = new Random();
+		// set timer to stop simulation, prevents infinite runtime
+		// will exit after roughly 30 seconds
 		long start = System.currentTimeMillis();
 		long end = start + 30*1000;
 		
-
 		Scanner sc = new Scanner(System.in);  
+		// prompts for number of guests
 		System.out.println("Enter number of guests: ");
 		int totalGuests = sc.nextInt();
 
+		// dec for array of guest threads
 		Guest [] guests = new Guest[totalGuests];
 
 		// array to check if thread was already started or not
         Boolean [] started = new Boolean[totalGuests];
         Arrays.fill(started, Boolean.FALSE);
+
+		// create spinlock for threads
 		SpinLock lock = new SpinLock();
 
+		// create the guest threads, also checks time
 		for (int i = 0; i < totalGuests; i++)
 		{
-			System.out.println("time is " + System.currentTimeMillis() + " and end is " + end);
 			if (System.currentTimeMillis() > end)
 				System.exit(0);
 			
 			guests[i] = new Guest(i, lock);
 		}
 
+		// start the guest threads, also checks time
 		for (int i = 0; i < totalGuests; i++)
 		{
-			System.out.println("time is " + System.currentTimeMillis() + " and end is " + end);
 			if (System.currentTimeMillis() > end)
 				System.exit(0);
 			
 			guests[i].start();
 		}
 
+		// continuously run the guest threads, also checks time
 		while (true)
 		{
-			System.out.println("time is " + System.currentTimeMillis() + " and end is " + end);
 			if (System.currentTimeMillis() > end)
 				System.exit(0);
 			guests[rand.nextInt(totalGuests - 1)].run();
 		}
-		
 	}
 }
 
 
-
+// guest class
 class Guest extends Thread {
 
-	//private boolean sawVase;
 	private int threadNumber;
 	private int queueChance;
 	SpinLock lock;
 
+	// creates random var
 	Random rand = new Random();
 
 	// constructor
 	public Guest (int threadNumber, SpinLock lock)
 	{
-		//this.sawVase = false;
 		this.queueChance = 2;
 		this.lock = lock;
 		this.threadNumber = threadNumber;
-
 	}
 
 	public void run() 
 	{
-		
 		// if random number 1-100 is more than queue chance times 100 (100, 50, 25, )
-		//System.out.println("running thread " + threadNumber);
+		// this prevents threads that have seen the vase from repeatedly joining
 		if (rand.nextInt(100* queueChance) < 50 && queueChance < 1024)
 		{
-			//System.out.println("Guest " + threadNumber + " check room. Queue chance is " + queueChance);
 			queueChance = queueChance * 2;
 			// tries lock
 			lock.lock();
-			//System.out.println("Guest " + threadNumber + " locked room");
-			//System.out.println("Hooray! Guest " + threadNumber + " is in the room. Next chance is " + queueChance);
+			System.out.println("Guest " + threadNumber + " saw the vase!");
 			lock.unlock();
-			//System.out.println("Guest " + threadNumber + " unlocked");
 		}
-		//else
-			//System.out.println("did not pass check");
-
 	}
 }
 
 class SpinLock extends ReentrantLock{
 
+	// constructor for lock
 	public SpinLock() {
 		super();
 	}
 
+	// sets up spinlock to keep checking if lock is available
 	public void lock() {
 		while (!super.tryLock())
 		{
-			//System.out.println("I am waiting");
 			// Do Nothing
 		}
 	}
 
+	// unlocks the lock
 	public void unlock()
 	{
 		super.unlock();
