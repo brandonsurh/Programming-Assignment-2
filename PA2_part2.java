@@ -11,6 +11,8 @@ public class PA2_part2 {
 	public static void main (String [] args) {
 
 		Random rand = new Random();
+		long start = System.currentTimeMillis();
+		long end = start + 30*1000;
 		
 
 		Scanner sc = new Scanner(System.in);  
@@ -26,19 +28,27 @@ public class PA2_part2 {
 
 		for (int i = 0; i < totalGuests; i++)
 		{
+			System.out.println("time is " + System.currentTimeMillis() + " and end is " + end);
+			if (System.currentTimeMillis() > end)
+				System.exit(0);
 			
 			guests[i] = new Guest(i, lock);
 		}
 
 		for (int i = 0; i < totalGuests; i++)
 		{
+			System.out.println("time is " + System.currentTimeMillis() + " and end is " + end);
+			if (System.currentTimeMillis() > end)
+				System.exit(0);
 			
 			guests[i].start();
 		}
 
 		while (true)
 		{
-			
+			System.out.println("time is " + System.currentTimeMillis() + " and end is " + end);
+			if (System.currentTimeMillis() > end)
+				System.exit(0);
 			guests[rand.nextInt(totalGuests - 1)].run();
 		}
 		
