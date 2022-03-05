@@ -1,5 +1,13 @@
 # Programming-Assignment-2
 
+Problem 1:
+My solution uses two main types of threads. I named them primary and secondary. The primary thread accounts for all of the guests except for one. These types of guests will eat the cake once but never twice. The secondary thread will count how many times it sees that there is a missing cake and request another. When the secondary thread sees that it has requested totalGuests - 1, then it will know that all of the guests have eaten cake and that all of the guests have been in the maze. Then it will announce this to the minotaur and exit the program. To simulate this further, I have added a chance functionality to see if the guest has made it to the end of the maze and a chance functionality to figure out which thread the minotaur picks to enter the maze.
+
+
+
+
+
+
 Which of these three strategies should the guests choose? Please discuss the advantages and disadvantages.
 
 For the second problem I chose to use the first approach. This approach is not very efficient on large sets but it is simple. It is not efficient with a large amount of threads since spinlocks waste resources on busy waiting as opposed to being able to process things elsewhere. Due to continuously checking to see if the lock is free, threads are kept busy and these checks are usually unnecessary. The advantage to this approach is that it is very simple and with small wait times it can be efficient.
